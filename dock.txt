@@ -1,0 +1,33 @@
+create Dockerfile
+
+html
+  
+FROM nginx:alpine
+COPY . /usr/share/nginx/html
+  
+java
+    
+FROM openjdk:17
+WORKDIR /app
+COPY . .
+RUN javac App.java
+CMD ["java", "App"]
+
+build n run
+  
+docker build -t resume-app .
+docker run -d -p 8085:80 resume-app
+
+http://localhost:8085
+
+java+maven
+
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package
+
+FROM openjdk:17
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+CMD ["java", "-jar", "app.jar"]
